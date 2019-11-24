@@ -8,21 +8,14 @@
             "type": "java",
             "name": "CodeLens (Launch) - Client",
             "request": "launch",
-            "mainClass": "app.Client",
+            "mainClass": "app.client.Client",
             "projectName": "agenda-rmi"
         },
         {
             "type": "java",
             "name": "CodeLens (Launch) - Server",
             "request": "launch",
-            "mainClass": "Server",
-            "projectName": "agenda-rmi"
-        },
-        {
-            "type": "java",
-            "name": "CodeLens (Launch) - Server",
-            "request": "launch",
-            "mainClass": "app.Server",
+            "mainClass": "app.server.Server",
             "projectName": "agenda-rmi"
         },
         {
@@ -30,13 +23,6 @@
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "Debug (Launch)-App<agenda-rmi>",
-            "request": "launch",
-            "mainClass": "app.App",
-            "projectName": "agenda-rmi"
         }
     ]
 }

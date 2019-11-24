@@ -1,14 +1,16 @@
-package app;
+package app.client;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import app.models.Pessoa;
+import app.rmi_interfaces.PessoaRMIInterface;
+
 public class Client {
     public static void main(String[] args) {
-        String host = (args.length < 1) ? null : args[0];
         try {
-            Registry registry = LocateRegistry.getRegistry(host);
-            PessoaInterface stub = (PessoaInterface) registry.lookup("PessoaInterface");
+            Registry registry = LocateRegistry.getRegistry();
+            PessoaRMIInterface stub = (PessoaRMIInterface) registry.lookup("PessoaRMIInterface");
             Pessoa pe = new Pessoa();
             pe.nome = "jairo";
             pe.endereco = "r 244, 145, apto 203, meia-praia - Santa Catarina";
@@ -16,8 +18,7 @@ public class Client {
             for (Pessoa p: stub.todos()) 
                 System.out.println(p.id + '\t' + p.nome);            
         } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
-            e.printStackTrace();
+            System.err.println("Erro: " + e.getMessage());
         }    
     }
 }

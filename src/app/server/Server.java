@@ -10,6 +10,8 @@ import app.controllers.PessoaController;
 import app.rmi_interfaces.PessoaRMIInterface;
 
 public class Server {
+    public static final int PORTA_RMI_PADRAO = 1099;
+
     private static Connection inicializar_conexao() throws Exception {        
         Class.forName("org.sqlite.JDBC");
         Connection conn = DriverManager.getConnection("jdbc:sqlite:agenda-rmi.db");
@@ -29,8 +31,10 @@ public class Server {
             PessoaController controller = new PessoaController(conn);
             PessoaRMIInterface stub = 
                 (PessoaRMIInterface) UnicastRemoteObject.exportObject(controller, 0);
-            Registry registry = LocateRegistry.getRegistry();
-            registry.rebind("PessoaRMIInterface", stub);
+            int porta_rmi = 
+                (args.length > 0) ? Integer.parseInt(args[0]) : PORTA_RMI_PADRAO;
+            Registry registro_rmi = LocateRegistry.createRegistry(porta_rmi);
+            registro_rmi.rebind("PessoaRMIInterface", stub);
             System.err.println("Servidor pronto!");
         } catch (Exception e) {            
             System.err.println("Não foi possível iniciar o servidor!");

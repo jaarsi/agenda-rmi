@@ -9,14 +9,16 @@
             "name": "CodeLens (Launch) - Client",
             "request": "launch",
             "mainClass": "app.client.Client",
-            "projectName": "agenda-rmi"
+            "projectName": "agenda-rmi",
+            "args": "2000"
         },
         {
             "type": "java",
             "name": "CodeLens (Launch) - Server",
             "request": "launch",
             "mainClass": "app.server.Server",
-            "projectName": "agenda-rmi"
+            "projectName": "agenda-rmi",
+            "args": ""
         },
         {
             "type": "java",

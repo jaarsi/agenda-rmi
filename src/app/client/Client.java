@@ -15,6 +15,7 @@ public class Client {
             Registry registro_rmi = LocateRegistry.getRegistry(porta_rmi);
             PessoaRMIInterface stub = 
                 (PessoaRMIInterface) registro_rmi.lookup("PessoaRMIInterface");
+            new GUI(stub).loop();
         } catch (Exception e) {
             System.err.println("Erro: " + e.getMessage());
         }    

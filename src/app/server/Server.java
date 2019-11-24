@@ -35,9 +35,8 @@ public class Server {
                 (args.length > 0) ? Integer.parseInt(args[0]) : PORTA_RMI_PADRAO;
             Registry registro_rmi = LocateRegistry.createRegistry(porta_rmi);
             registro_rmi.rebind("PessoaRMIInterface", stub);
-            System.err.println("Servidor pronto!");
+            System.err.println("Servidor pronto. Escutando porta " + porta_rmi);
         } catch (Exception e) {            
-            System.err.println("Não foi possível iniciar o servidor!");
             e.printStackTrace();
         }
     }

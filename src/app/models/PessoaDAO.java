@@ -78,4 +78,24 @@ public class PessoaDAO implements PessoaInterface {
         ps.executeUpdate();
         return pessoa;
     }
+
+    @Override
+    public Pessoa buscar(Connection conexao, Long id) throws SQLException {
+        PreparedStatement ps = conexao.prepareStatement(
+            "SELECT * FROM PESSOA WHERE ID = ?");
+        ps.setLong(1, id);
+        ResultSet rs = ps.executeQuery();        
+        try {
+            while (rs.next()) {            
+                Pessoa p = new Pessoa();
+                p.id = rs.getLong("id");
+                p.nome = rs.getString("nome");
+                p.endereco = rs.getString("endereco");
+                return p;
+            }
+            return null;
+        } finally {
+            rs.close();
+        }
+    }
 }

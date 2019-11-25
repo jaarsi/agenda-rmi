@@ -40,4 +40,9 @@ public class PessoaController implements PessoaRMIInterface {
     public Pessoa excluir(Pessoa pessoa) throws RemoteException, SQLException {
         return new PessoaDAO().excluir(this.conexao, pessoa);
     }
+
+    @Override
+    public Pessoa buscar(Long id) throws RemoteException, SQLException {        
+        return new PessoaDAO().buscar(this.conexao, id);
+    }
 }

@@ -7,4 +7,9 @@ public class Pessoa implements Serializable {
     public Long id;
     public String nome;
     public String endereco;
+
+    @Override
+    public String toString() {
+        return String.format("%d\t%s\t\t%s", this.id, this.nome, this.endereco);
+    }
 }

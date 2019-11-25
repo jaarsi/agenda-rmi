@@ -10,8 +10,6 @@ import app.controllers.PessoaController;
 import app.rmi_interfaces.PessoaRMIInterface;
 
 public class Server {
-    public static final int PORTA_RMI_PADRAO = 1099;
-
     private static Connection inicializar_conexao() throws Exception {        
         Class.forName("org.sqlite.JDBC");
         Connection conn = DriverManager.getConnection("jdbc:sqlite:agenda-rmi.db");
@@ -26,16 +24,22 @@ public class Server {
     }
 
     public static void main(final String args[]) {
+        int porta_rmireg;
         try {            
+            try{
+                porta_rmireg = Integer.parseInt(args[0]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                throw new Exception(
+                    "Informe a porta onde o 'rmiregistry' será alocado ..."
+                );
+            }
             Connection conn = inicializar_conexao();
             PessoaController controller = new PessoaController(conn);
             PessoaRMIInterface stub = 
-                (PessoaRMIInterface) UnicastRemoteObject.exportObject(controller, 0);
-            int porta_rmi = 
-                (args.length > 0) ? Integer.parseInt(args[0]) : PORTA_RMI_PADRAO;
-            Registry registro_rmi = LocateRegistry.createRegistry(porta_rmi);
+                (PessoaRMIInterface) UnicastRemoteObject.exportObject(controller, 0);            
+            Registry registro_rmi = LocateRegistry.createRegistry(porta_rmireg);
             registro_rmi.rebind("PessoaRMIInterface", stub);
-            System.err.println("Servidor pronto. Escutando porta " + porta_rmi);
+            System.err.printf("Servidor pronto. Escutando porta %d ...\n", porta_rmireg);
         } catch (Exception e) {            
             e.printStackTrace();
         }

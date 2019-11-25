@@ -22,6 +22,14 @@
         },
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Server2",
+            "request": "launch",
+            "mainClass": "app.server.Server",
+            "projectName": "agenda-rmi",
+            "args": "2001"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"

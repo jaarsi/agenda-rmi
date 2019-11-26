@@ -24,6 +24,14 @@ public class Server {
         return conn;
     }
 
+    private static PessoaRMIInterface gerar_stub() throws Exception {
+        Connection conexao = inicializar_conexao();
+        PessoaController controller = new PessoaController(conexao);        
+        PessoaRMIInterface stub = 
+            (PessoaRMIInterface) UnicastRemoteObject.exportObject(controller, 0);
+        return stub;
+    }
+
     public static void main(final String args[]) throws Exception {
         if (args.length < 3) 
             throw new Exception(
@@ -35,14 +43,13 @@ public class Server {
         int rmireg_porta = Integer.parseInt(args[1]);
         String rmireg_ref_remota = args[2];
 
-        Connection conexao = inicializar_conexao();
-        PessoaController controller = new PessoaController(conexao);        
-        PessoaRMIInterface stub = 
-            (PessoaRMIInterface) UnicastRemoteObject.exportObject(controller, 0);
+        PessoaRMIInterface stub = gerar_stub();
         try {
             Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
             rmireg.bind(rmireg_ref_remota, stub);    
         } catch (ConnectException e) {
+            System.out.print(
+                "O 'rmiregistry' informado não respondeu, criando localmente ...\n");
             rmireg_host = "localhost";
             Registry rmireg = LocateRegistry.createRegistry(rmireg_porta);
             rmireg.bind(rmireg_ref_remota, stub);    
@@ -50,7 +57,7 @@ public class Server {
             throw new Exception("A referência remota utilizada já está registrada!");
         }
         System.err.printf(
-            "Servidor pronto. Objeto remoto em %s:%d/%s ...\n", 
+            "Servidor pronto. 'rmiregistry' -> %s:%d/%s\n",
             rmireg_host, rmireg_porta, rmireg_ref_remota);
     }
 }

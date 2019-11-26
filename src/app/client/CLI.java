@@ -1,5 +1,7 @@
 package app.client;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Scanner;
 
@@ -8,6 +10,20 @@ import app.rmi_interfaces.PessoaRMIInterface;
 
 public class CLI {
     private PessoaRMIInterface stub = null;
+
+    private void selecionar_servidor() throws Exception {
+        System.out.print("Informe o host do 'rmiregistry': ");
+        String rmireg_host = this.input_str();
+        System.out.print("Informe a porta do 'rmiregistry': " );
+        int rmireg_porta = this.input_int();
+        Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
+        String[] ref_remotas = rmireg.list();
+        System.out.printf(
+            "Selecione um servidor entre esses (%s): ", 
+            String.join(",", ref_remotas));
+        String ref_remota = this.input_str();
+        stub = (PessoaRMIInterface) rmireg.lookup(ref_remota);
+    }
 
     private int menu() {
         System.out.print(
@@ -107,8 +123,9 @@ public class CLI {
     }
 
     public void loop() throws Exception {
+        this.selecionar_servidor();
         while (true)
-            try {
+            try {                
                 int opcao = this.menu();
                 switch (opcao) {
                     case 1: { this.listar(); break; }

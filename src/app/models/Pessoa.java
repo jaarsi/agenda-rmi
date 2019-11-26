@@ -4,12 +4,21 @@ import java.io.Serializable;
 
 public class Pessoa implements Serializable {
     private static final long serialVersionUID = 1L;
-    public Long id;
+    public int id;
     public String nome;
     public String endereco;
 
-    @Override
+    public Pessoa(int id, String nome, String endereco) {
+        this.id = id;
+        this.nome = nome;
+        this.endereco = endereco;
+    }
+
+    public Pessoa() {
+	}
+
+	@Override
     public String toString() {
-        return String.format("%d\t%s\t\t%s", this.id, this.nome, this.endereco);
+        return String.format("%-4d %-15s %-50s", this.id, this.nome, this.endereco);
     }
 }

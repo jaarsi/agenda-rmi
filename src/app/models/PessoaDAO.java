@@ -10,14 +10,14 @@ import java.util.List;
 
 public class PessoaDAO implements PessoaInterface {
     @Override
-    public List<Pessoa> todos(Connection conexao) throws SQLException {        
+    public List<Pessoa> listar(Connection conexao) throws SQLException {        
         List<Pessoa> list = new ArrayList<Pessoa>();
         Statement st = conexao.createStatement();
         ResultSet rs = st.executeQuery(
             "SELECT * FROM PESSOA ORDER BY NOME");
         while (rs.next()) {
             Pessoa p = new Pessoa();
-            p.id = rs.getLong("id");
+            p.id = rs.getInt("id");
             p.nome = rs.getString("nome");
             p.endereco = rs.getString("endereco");
             list.add(p);
@@ -35,7 +35,7 @@ public class PessoaDAO implements PessoaInterface {
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             Pessoa p = new Pessoa();
-            p.id = rs.getLong("id");
+            p.id = rs.getInt("id");
             p.nome = rs.getString("nome");
             p.endereco = rs.getString("endereco");
             list.add(p);
@@ -54,7 +54,7 @@ public class PessoaDAO implements PessoaInterface {
         ps.executeUpdate();
         ResultSet generatedKeys = ps.getGeneratedKeys();
         if (generatedKeys.next())
-            pessoa.id = generatedKeys.getLong(1);
+            pessoa.id = generatedKeys.getInt(1);
                 
         return pessoa;         
     }
@@ -80,7 +80,7 @@ public class PessoaDAO implements PessoaInterface {
     }
 
     @Override
-    public Pessoa buscar(Connection conexao, Long id) throws SQLException {
+    public Pessoa buscar(Connection conexao, int id) throws SQLException {
         PreparedStatement ps = conexao.prepareStatement(
             "SELECT * FROM PESSOA WHERE ID = ?");
         ps.setLong(1, id);
@@ -88,7 +88,7 @@ public class PessoaDAO implements PessoaInterface {
         try {
             while (rs.next()) {            
                 Pessoa p = new Pessoa();
-                p.id = rs.getLong("id");
+                p.id = rs.getInt("id");
                 p.nome = rs.getString("nome");
                 p.endereco = rs.getString("endereco");
                 return p;

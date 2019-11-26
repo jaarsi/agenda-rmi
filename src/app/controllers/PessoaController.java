@@ -17,8 +17,8 @@ public class PessoaController implements PessoaRMIInterface {
     }
 
     @Override
-    public List<Pessoa> todos() throws RemoteException, SQLException {
-        return new PessoaDAO().todos(this.conexao);
+    public List<Pessoa> listar() throws RemoteException, SQLException {
+        return new PessoaDAO().listar(this.conexao);
     }
 
     @Override
@@ -28,6 +28,10 @@ public class PessoaController implements PessoaRMIInterface {
 
     @Override
     public Pessoa adicionar(Pessoa pessoa) throws RemoteException, SQLException {
+        if (pessoa.nome.trim().isEmpty())
+            throw new SQLException("Preencha o nome da pessoa.");
+        if (pessoa.endereco.trim().isEmpty())
+            throw new SQLException("Preencha o endereco da pessoa.");
         return new PessoaDAO().adicionar(this.conexao, pessoa);
     }
 
@@ -38,11 +42,15 @@ public class PessoaController implements PessoaRMIInterface {
 
     @Override
     public Pessoa excluir(Pessoa pessoa) throws RemoteException, SQLException {
+        if (pessoa.nome.trim().isEmpty())
+            throw new SQLException("Preencha o nome da pessoa.");
+        if (pessoa.endereco.trim().isEmpty())
+            throw new SQLException("Preencha o endereco da pessoa.");
         return new PessoaDAO().excluir(this.conexao, pessoa);
     }
 
     @Override
-    public Pessoa buscar(Long id) throws RemoteException, SQLException {        
+    public Pessoa buscar(int id) throws RemoteException, SQLException {        
         return new PessoaDAO().buscar(this.conexao, id);
     }
 }

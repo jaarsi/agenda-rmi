@@ -8,10 +8,11 @@ import java.util.List;
 import app.models.Pessoa;
 
 public interface PessoaRMIInterface extends Remote {
-    public List<Pessoa> listar() throws Exception; 
+    public String echo() throws RemoteException;
+    public List<Pessoa> listar() throws RemoteException, SQLException; 
     public List<Pessoa> filtrar(String nome) throws RemoteException, SQLException;
     public Pessoa buscar(int id) throws RemoteException, SQLException;    
     public Pessoa adicionar(Pessoa pessoa) throws RemoteException, SQLException;
     public Pessoa alterar(Pessoa pessoa) throws RemoteException, SQLException;
-    public Pessoa excluir(Pessoa pessoa) throws RemoteException, SQLException;
+    public Pessoa excluir(Pessoa pessoa) throws RemoteException, SQLException;    
 }

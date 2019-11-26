@@ -53,4 +53,9 @@ public class PessoaController implements PessoaRMIInterface {
     public Pessoa buscar(int id) throws RemoteException, SQLException {        
         return new PessoaDAO().buscar(this.conexao, id);
     }
+
+    @Override
+    public String echo() throws RemoteException {
+        return "online";
+    }
 }

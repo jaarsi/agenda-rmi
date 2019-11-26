@@ -24,17 +24,15 @@ public class Server {
         Class.forName("org.sqlite.JDBC");
         Connection conn = DriverManager.getConnection("jdbc:sqlite:agenda-rmi.db");
         conn.setAutoCommit(true);
-        conn.createStatement().executeUpdate(
-            "CREATE TABLE IF NOT EXISTS PESSOA (" + 
-            "ID         INTEGER PRIMARY KEY NOT NULL," + 
-            "NOME       TEXT                NOT NULL," + 
-            "ENDERECO   TEXT                NOT NULL)");
+        conn.createStatement()
+                .executeUpdate("CREATE TABLE IF NOT EXISTS PESSOA (" + "ID         INTEGER PRIMARY KEY NOT NULL,"
+                        + "NOME       TEXT                NOT NULL," + "ENDERECO   TEXT                NOT NULL)");
         return conn;
     }
 
     private static PessoaRMIInterface gerar_stub() throws Exception {
         Connection conexao = inicializar_conexao();
-        PessoaController controller = new PessoaController(conexao);        
+        PessoaController controller = new PessoaController(conexao);
         PessoaRMIInterface stub = 
             (PessoaRMIInterface) UnicastRemoteObject.exportObject(controller, 0);
         return stub;
@@ -51,7 +49,7 @@ public class Server {
         options.addOption(opt);
         opt = new Option("rb", "Força a exportação da referência remota");
         options.addOption(opt);
-        
+
         HelpFormatter formatter = new HelpFormatter();
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd;
@@ -60,7 +58,7 @@ public class Server {
         } catch (ParseException e) {
             cmd = null;
             System.out.println(e.getMessage());
-            formatter.printHelp("agenda-rmi", options);            
+            formatter.printHelp("agenda-rmi", options);
             System.exit(1);
         }
 
@@ -71,8 +69,8 @@ public class Server {
 
         PessoaRMIInterface stub = gerar_stub();
         Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
-        try{
-            try {            
+        try {
+            try {
                 rmireg.bind(rmireg_ref_remota, stub);
             } catch (ConnectException e) {
                 System.out.print(
@@ -90,7 +88,7 @@ public class Server {
             }
         }
         System.out.printf(
-            "Servidor pronto. 'rmiregistry' -> %s:%d/%s\n",
+            "Servidor pronto | 'rmiregistry' -> %s:%d | ref. remota %s\n",
             rmireg_host, rmireg_porta, rmireg_ref_remota);
     }
 }

@@ -6,26 +6,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "CodeLens (Launch) - RMIRegistry",
-            "request": "launch",
-            "mainClass": "app.server.RMIRegistry",
-            "projectName": "agenda-rmi"
-        },
-        {
-            "type": "java",
-            "name": "CodeLens (Launch) - Client",
-            "request": "launch",
-            "mainClass": "app.client.Client",
-            "projectName": "agenda-rmi",
-            "args": "2000"
-        },
-        {
-            "type": "java",
             "name": "CodeLens (Launch) - Server1",
             "request": "launch",
             "mainClass": "app.server.Server",
             "projectName": "agenda-rmi",
-            "args": "localhost 2000 server1"
         },
         {
             "type": "java",
@@ -34,6 +18,20 @@
             "mainClass": "app.server.Server",
             "projectName": "agenda-rmi",
             "args": "localhost 2000 server2"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Client1",
+            "request": "launch",
+            "mainClass": "app.client.Client",
+            "projectName": "agenda-rmi",
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Client2",
+            "request": "launch",
+            "mainClass": "app.client.Client",
+            "projectName": "agenda-rmi",
         },
         {
             "type": "java",

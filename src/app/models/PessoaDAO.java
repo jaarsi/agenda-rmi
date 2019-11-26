@@ -84,7 +84,7 @@ public class PessoaDAO implements PessoaInterface {
         PreparedStatement ps = conexao.prepareStatement(
             "SELECT * FROM PESSOA WHERE ID = ?");
         ps.setLong(1, id);
-        ResultSet rs = ps.executeQuery();        
+        ResultSet rs = ps.executeQuery();
         try {
             while (rs.next()) {            
                 Pessoa p = new Pessoa();

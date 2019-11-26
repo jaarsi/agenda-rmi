@@ -28,24 +28,24 @@ public class PessoaController implements PessoaRMIInterface {
 
     @Override
     public Pessoa adicionar(Pessoa pessoa) throws RemoteException, SQLException {
-        if (pessoa.nome.trim().isEmpty())
+        if (pessoa.nome.trim().isBlank())
             throw new SQLException("Preencha o nome da pessoa.");
-        if (pessoa.endereco.trim().isEmpty())
+        if (pessoa.endereco.trim().isBlank())
             throw new SQLException("Preencha o endereco da pessoa.");
         return new PessoaDAO().adicionar(this.conexao, pessoa);
     }
 
     @Override
     public Pessoa alterar(Pessoa pessoa) throws RemoteException, SQLException {
+        if (pessoa.nome.trim().isBlank())
+            throw new SQLException("Preencha o nome da pessoa.");
+        if (pessoa.endereco.trim().isBlank())
+            throw new SQLException("Preencha o endereco da pessoa.");
         return new PessoaDAO().alterar(this.conexao, pessoa);
     }
 
     @Override
     public Pessoa excluir(Pessoa pessoa) throws RemoteException, SQLException {
-        if (pessoa.nome.trim().isEmpty())
-            throw new SQLException("Preencha o nome da pessoa.");
-        if (pessoa.endereco.trim().isEmpty())
-            throw new SQLException("Preencha o endereco da pessoa.");
         return new PessoaDAO().excluir(this.conexao, pessoa);
     }
 

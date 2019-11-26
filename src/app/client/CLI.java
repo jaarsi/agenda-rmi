@@ -131,42 +131,47 @@ public class CLI {
     }
 
     public void loop() throws Exception {
-        this.selecionar_servidor();
-        this.show_msg("\n\n");
-        int opcao = this.menu();
-        while (true)
-            try {                
-                this.clearScreen();
-                switch (opcao) {
-                    case 1: { this.listar(); break; }
-                    case 2: { this.filtrar(); break; }
-                    case 3: { this.buscar(); break; }
-                    case 4: { this.adicionar(); break; }
-                    case 5: { this.alterar(); break; }
-                    case 6: { this.excluir(); break; }
-                    case 7: { this.selecionar_servidor(); break; }
-                    case 0: { System.exit(0); break; }
-                    default: this.show_msg("Opção incorreta ...\n");
+        try {
+            this.selecionar_servidor();
+
+            this.show_msg("\n\n");
+            int opcao = this.menu();
+            while (true)
+                try {                
+                    this.clearScreen();
+                    switch (opcao) {
+                        case 1: { this.listar(); break; }
+                        case 2: { this.filtrar(); break; }
+                        case 3: { this.buscar(); break; }
+                        case 4: { this.adicionar(); break; }
+                        case 5: { this.alterar(); break; }
+                        case 6: { this.excluir(); break; }
+                        case 7: { this.selecionar_servidor(); break; }
+                        case 0: { System.exit(0); break; }
+                        default: this.show_msg("Opção incorreta ...\n");
+                    }
+                } catch (ConnectException e) {
+                    try{
+                        this.rmireg.unbind(this.ref_remota);
+                    } catch (Exception x) {
+                        this.show_msg(
+                            "A conexão com o 'rmiregistry' foi perdida. "+
+                            "Entre em contato com o administrador...\n");
+                        System.exit(0);
+                    }
+                    this.show_msg("\n\n");                
+                    this.show_msg("A conexão com o servidor caiu, selecione outro ...\n");
+                    this.selecionar_servidor();
+                } catch (Exception e) {
+                    this.show_msg("\n\n");
+                    this.show_msg(e.getMessage() + "\n");
+                } finally {
+                    this.show_msg("\n\n");
+                    this.show_msg("Conectado à " + this.ref_remota + "\n\n");
+                    opcao = this.menu();
                 }
-            } catch (ConnectException e) {
-                try{
-                    this.rmireg.unbind(this.ref_remota);
-                } catch (Exception x) {
-                    this.show_msg(
-                        "A conexão com o 'rmiregistry' foi perdida. "+
-                        "Entre em contato com o administrador...\n");
-                    System.exit(0);
-                }
-                this.show_msg("\n\n");                
-                this.show_msg("A conexão com o servidor caiu, selecione outro ...\n");
-                this.selecionar_servidor();
-            } catch (Exception e) {
-                this.show_msg("\n\n");
-                this.show_msg(e.getMessage() + "\n");
-            } finally {
-                this.show_msg("\n\n");
-                this.show_msg("Conectado à " + this.ref_remota + "\n\n");
-                opcao = this.menu();
-            }
+        } catch (Exception e) {
+            this.show_msg("Não é possivel conectar-se ao 'rmiregistry'.\n");
         }
+    }
 }

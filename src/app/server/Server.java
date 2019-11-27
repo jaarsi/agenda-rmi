@@ -1,5 +1,8 @@
 package app.server;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
 import java.rmi.registry.LocateRegistry;
@@ -15,11 +18,15 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 import app.controllers.PessoaController;
 import app.rmi_interfaces.PessoaRMIInterface;
 
 public class Server {
+    private static Map<String, Socket> clients = new HashMap<String, Socket>();
+
     private static Connection inicializar_conexao() throws Exception {
         Class.forName("org.sqlite.JDBC");
         Connection conn = DriverManager.getConnection("jdbc:sqlite:agenda-rmi.db");
@@ -36,6 +43,23 @@ public class Server {
         PessoaRMIInterface stub = 
             (PessoaRMIInterface) UnicastRemoteObject.exportObject(controller, 0);
         return stub;
+    }
+
+    private static void inicializar_socket(int porta) {
+        try {        
+            ServerSocket s = new ServerSocket(porta);
+            while (true) {
+                Socket c = s.accept();
+                new Runnable(){
+                    @Override
+                    public void run() {
+                        
+                    }
+                };    
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(final String args[]) throws Exception {
@@ -59,7 +83,7 @@ public class Server {
             cmd = null;
             System.out.println(e.getMessage());
             formatter.printHelp("agenda-rmi", options);
-            System.exit(1);
+            System.exit(0);
         }
 
         String rmireg_host = cmd.getOptionValue("rmi_host", "localhost");
@@ -78,6 +102,7 @@ public class Server {
                 rmireg_host = "localhost";
                 rmireg = LocateRegistry.createRegistry(rmireg_porta);
                 rmireg.bind(rmireg_ref_remota, stub);
+                //inicializar_socket(rmireg_porta+1);                
             }
         } catch (AlreadyBoundException e) {
             if (rebind)

@@ -10,6 +10,7 @@
             "request": "launch",
             "mainClass": "app.server.Server",
             "projectName": "agenda-rmi",
+            "args": "-ref server1"
         },
         {
             "type": "java",
@@ -17,7 +18,7 @@
             "request": "launch",
             "mainClass": "app.server.Server",
             "projectName": "agenda-rmi",
-            "args": "localhost 2000 server2"
+            "args": "-ref server2"
         },
         {
             "type": "java",

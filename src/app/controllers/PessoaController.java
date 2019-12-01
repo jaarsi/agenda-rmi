@@ -7,6 +7,7 @@ import java.util.List;
 
 import app.models.Pessoa;
 import app.models.PessoaDAO;
+import app.models.Usuario;
 import app.rmi_interfaces.PessoaRMIInterface;
 
 public class PessoaController implements PessoaRMIInterface {
@@ -17,17 +18,17 @@ public class PessoaController implements PessoaRMIInterface {
     }
 
     @Override
-    public List<Pessoa> listar() throws RemoteException, SQLException {
+    public List<Pessoa> listar(Usuario usuario) throws RemoteException, SQLException {
         return new PessoaDAO().listar(this.conexao);
     }
 
     @Override
-    public List<Pessoa> filtrar(String nome) throws RemoteException, SQLException {
+    public List<Pessoa> filtrar(Usuario usuario, String nome) throws RemoteException, SQLException {
         return new PessoaDAO().filtrar(this.conexao, nome);
     }
 
     @Override
-    public Pessoa adicionar(Pessoa pessoa) throws RemoteException, SQLException {
+    public Pessoa adicionar(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException {
         if (pessoa.nome.trim().isBlank())
             throw new SQLException("Preencha o nome da pessoa.");
         if (pessoa.endereco.trim().isBlank())
@@ -36,7 +37,7 @@ public class PessoaController implements PessoaRMIInterface {
     }
 
     @Override
-    public Pessoa alterar(Pessoa pessoa) throws RemoteException, SQLException {
+    public Pessoa alterar(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException {
         if (pessoa.nome.trim().isBlank())
             throw new SQLException("Preencha o nome da pessoa.");
         if (pessoa.endereco.trim().isBlank())
@@ -45,12 +46,12 @@ public class PessoaController implements PessoaRMIInterface {
     }
 
     @Override
-    public Pessoa excluir(Pessoa pessoa) throws RemoteException, SQLException {
+    public Pessoa excluir(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException {
         return new PessoaDAO().excluir(this.conexao, pessoa);
     }
 
     @Override
-    public Pessoa buscar(int id) throws RemoteException, SQLException {        
+    public Pessoa buscar(Usuario usuario, int id) throws RemoteException, SQLException {        
         return new PessoaDAO().buscar(this.conexao, id);
     }
 

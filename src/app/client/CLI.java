@@ -12,23 +12,30 @@ import java.util.List;
 import java.util.Scanner;
 
 import app.models.Pessoa;
+import app.models.Usuario;
 import app.rmi_interfaces.PessoaRMIInterface;
 
 public class CLI {
+    private Usuario usuario = null;
     private PessoaRMIInterface stub = null;
-    private Registry rmireg = null;
-    private String ref_remota;
+    private String ref_remota;    
+
+    private void identificar_usuario() {
+        this.usuario = new Usuario();
+        this.usuario.login = this.input_str("Por favor, identifique-se: ");
+    }
 
     private void selecionar_servidor() throws RemoteException, NotBoundException {
         String rmireg_host = this.input_str("Informe o host do 'rmiregistry': ");
         int rmireg_porta = this.input_int("Informe a porta do 'rmiregistry': ");
-        this.rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
-        this.ref_remota = this
-                .input_str(String.format(
-                    "Selecione um servidor entre esses (%s): ", 
-                    String.join(",", rmireg.list())));
+        Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
+        this.ref_remota = this.input_str(String.format(
+            "Selecione um servidor entre esses (%s): ", 
+            String.join(",", rmireg.list())));
         this.stub = (PessoaRMIInterface) rmireg.lookup(ref_remota);
         this.stub.echo();
+
+        // inicializacao do socket aqui;
     }
 
     private int menu() {
@@ -45,17 +52,17 @@ public class CLI {
     }
 
     private void listar() throws RemoteException, SQLException {
-        this.show_pessoa(this.stub.listar());
+        this.show_pessoa(this.stub.listar(this.usuario));
     }
 
     private void filtrar() throws RemoteException, SQLException {
         String nome = this.input_str("Informe o nome que deve ser filtrado: ");
-        this.show_pessoa(this.stub.filtrar(nome));
+        this.show_pessoa(this.stub.filtrar(this.usuario, nome));
     }
 
     private void buscar() throws RemoteException, SQLException {
         int id = this.input_int("Informe o codigo do contato: ");
-        Pessoa p = this.stub.buscar(id);
+        Pessoa p = this.stub.buscar(this.usuario, id);
         if (p == null)
             throw new SQLException("Não existe nenhum contato com o codigo informado ...");
         this.show_pessoa(p);
@@ -65,13 +72,13 @@ public class CLI {
         String nome = this.input_str("Informe o nome do contato: ");
         String endereco = this.input_str("Informe o endereco do contato:\n");
         Pessoa p = new Pessoa(0, nome, endereco);
-        this.stub.adicionar(p);
+        this.stub.adicionar(this.usuario, p);
         this.show_msg("Contato cadastrado com sucesso!\n");
     }
 
     private void alterar() throws RemoteException, SQLException {
         int id = this.input_int("Informe o codigo do contato que deseja editar: ");
-        Pessoa p = this.stub.buscar(id);
+        Pessoa p = this.stub.buscar(this.usuario, id);
         if (p == null) 
             throw new SQLException("Não existe nenhum contato com o codigo informado ...");
         String nome = this.input_str(
@@ -82,13 +89,13 @@ public class CLI {
             String.format("Informe o endereco do contato: (%s)\n", p.endereco));
         if (!endereco.trim().isBlank())
             p.endereco = endereco;
-        this.stub.alterar(p);
+        this.stub.alterar(this.usuario, p);
         this.show_msg("Contato alterado com sucesso!\n");
     }
 
     private void excluir() throws RemoteException, SQLException {
         int id = this.input_int("Informe o codigo do contato que deseja excluir: ");
-        Pessoa p = this.stub.buscar(id);
+        Pessoa p = this.stub.buscar(this.usuario, id);
         if (p == null) 
             throw new SQLException("Não existe nenhum contato com o codigo informado ...");
         this.show_msg("Este procedimento excluirá o contato abaixo:\n");
@@ -96,7 +103,7 @@ public class CLI {
         String confirmacao = this.input_str(
             "Confirmar exclusao? ('s' para SIM ou 'n' para NÃO): ");
         if (confirmacao.equals("s")) {
-            this.stub.excluir(p);
+            this.stub.excluir(this.usuario, p);
             this.show_msg("Contato excluído com sucesso!\n");
         }
     }
@@ -147,9 +154,13 @@ public class CLI {
     public void loop() {        
         while (true)
             try {
+                if (this.usuario == null) 
+                    this.identificar_usuario();
                 if (this.stub == null)
                     this.selecionar_servidor();
-                this.show_msg("Conectado à " + this.ref_remota + "\n\n");
+                this.show_msg(String.format(
+                    "Bem-vindo %s, você está conectado ao servidor %s !\n", 
+                    this.usuario.login, this.ref_remota));
                 int opcao = this.menu();                
                 this.clearScreen();
                 switch (opcao) {

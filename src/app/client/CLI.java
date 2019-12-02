@@ -1,5 +1,9 @@
 package app.client;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -42,6 +46,26 @@ public class CLI {
         this.stub.logar(this.usuario);
 
         // inicializacao do socket aqui;
+        CLI self = this;
+        Thread socket_thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+                try {
+                    Socket s = new Socket(rmireg_host, rmireg_porta+1);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                    while (true) 
+                        try {
+                            String msg = in.readLine();
+                            self.show_msg(msg);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }                        
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+			}
+        });
+        socket_thread.start();
     }
 
     private int menu() {

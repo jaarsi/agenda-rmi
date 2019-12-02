@@ -1,5 +1,9 @@
 package app.server;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.AlreadyBoundException;
 import java.rmi.ConnectException;
 import java.rmi.registry.LocateRegistry;
@@ -127,6 +131,26 @@ public class Server {
                 rmireg_host = "localhost";
                 rmireg = LocateRegistry.createRegistry(rmireg_porta);
                 rmireg.bind(rmireg_ref_remota, stub);
+                Thread socket_thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+                        ServerSocket s;
+                        try {
+                            s = new ServerSocket(rmireg_porta + 1);
+                            while (true)
+                                try {
+                                    Socket c = s.accept();
+                                    PrintWriter out = new PrintWriter(c.getOutputStream(), true);
+                                    out.println("Bem-vindo ao servidor " + rmireg_ref_remota);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+					}
+                });
+                socket_thread.start();
             }
         } catch (AlreadyBoundException e) {
             // se já existir um stub vinculado à referência informada, cai aqui nessa exceção.

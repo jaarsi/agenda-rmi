@@ -56,6 +56,7 @@ public class CLI {
                     while (true) 
                         try {
                             String msg = in.readLine();
+                            msg = "\n\n" + msg + "\n\n";
                             self.show_msg(msg);
                         } catch (IOException e) {
                             e.printStackTrace();

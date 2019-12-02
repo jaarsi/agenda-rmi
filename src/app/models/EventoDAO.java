@@ -15,14 +15,15 @@ public class EventoDAO implements CRUDInterface<Evento> {
     public List<Evento> listar(Connection conexao) throws SQLException {
         List<Evento> list = new ArrayList<Evento>();
         Statement st = conexao.createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM EVENTO");
+        ResultSet rs = st.executeQuery("SELECT * FROM EVENTO WHERE DESPACHADO = 0");
+        PessoaDAO pdao = new PessoaDAO();
         while (rs.next()) {
             Evento e = new Evento();
             e.id = rs.getInt("id");
-            e.pessoa_id = rs.getInt("pessoa_id");
-            e.usuario = rs.getString("login");
+            e.pessoa = pdao.buscar(conexao, rs.getInt("pessoa_id"));
+            e.usuario = rs.getString("usuario");
             e.servidor = rs.getString("servidor");
-            e.operacao = rs.getString("dthr_login");
+            e.operacao = rs.getString("operacao");
             e.dthr_evento = rs.getDate("dthr_evento");
             e.despachado = rs.getBoolean("despachado");
             list.add(e);
@@ -49,8 +50,8 @@ public class EventoDAO implements CRUDInterface<Evento> {
             "VALUES (?,?,?,?,?,?)",
             Statement.RETURN_GENERATED_KEYS
         );        
-        if (item.pessoa_id > 0)
-            ps.setInt(1, item.pessoa_id);
+        if (item.pessoa != null)
+            ps.setInt(1, item.pessoa.id);
         else
             ps.setNull(1, java.sql.Types.INTEGER);
         ps.setString(2, item.usuario);
@@ -73,7 +74,10 @@ public class EventoDAO implements CRUDInterface<Evento> {
             "WHERE ID=?",
             Statement.RETURN_GENERATED_KEYS
         );
-        ps.setInt(1, item.pessoa_id);
+        if (item.pessoa != null)
+            ps.setInt(1, item.pessoa.id);
+        else
+            ps.setNull(1, java.sql.Types.INTEGER);
         ps.setString(2, item.usuario);
         ps.setString(3, item.servidor);
         ps.setString(4, item.operacao);

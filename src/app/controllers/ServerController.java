@@ -42,7 +42,7 @@ public class ServerController implements ServerRMIInterface {
         Pessoa p = new PessoaDAO().adicionar(this.conexao, pessoa);
         
         Evento ev = new Evento();
-        ev.pessoa_id = pessoa.id;
+        ev.pessoa = pessoa;
         ev.usuario = usuario.login;
         ev.servidor = usuario.servidor;
         ev.operacao = "adicionar";
@@ -64,7 +64,7 @@ public class ServerController implements ServerRMIInterface {
         Pessoa p = new PessoaDAO().alterar(this.conexao, pessoa);
 
         Evento ev = new Evento();
-        ev.pessoa_id = pessoa.id;
+        ev.pessoa = pessoa;
         ev.usuario = usuario.login;
         ev.servidor = usuario.servidor;
         ev.operacao = "alterar";
@@ -80,7 +80,7 @@ public class ServerController implements ServerRMIInterface {
         Pessoa p = new PessoaDAO().excluir(this.conexao, pessoa);
 
         Evento ev = new Evento();
-        ev.pessoa_id = pessoa.id;
+        ev.pessoa = pessoa;
         ev.usuario = usuario.login;
         ev.servidor = usuario.servidor;
         ev.operacao = "excluir";

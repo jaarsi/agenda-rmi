@@ -10,6 +10,7 @@ public class Pessoa implements Serializable {
     public String endereco;
     public Date criado_em;
     public Date alterado_em;
+    public boolean excluido;
 
     public Pessoa(int id, String nome, String endereco) {
         this.id = id;
@@ -17,14 +18,7 @@ public class Pessoa implements Serializable {
         this.endereco = endereco;
         this.criado_em = new Date();
         this.alterado_em = new Date();
-    }
-
-    public Pessoa(int id, String nome, String endereco, Date criado_em, Date alterado_em) {
-        this.id = id;
-        this.nome = nome;
-        this.endereco = endereco;
-        this.criado_em = criado_em;
-        this.alterado_em = alterado_em;
+        this.excluido = false;
     }
 
     public Pessoa() {

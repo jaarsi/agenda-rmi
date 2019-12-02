@@ -11,6 +11,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -81,7 +83,8 @@ public class Server {
             "NOME TEXT NOT NULL," + 
             "ENDERECO TEXT NOT NULL," +
             "CRIADO_EM INTEGER NOT NULL, " +
-            "ALTERADO_EM INTEGER NOT NULL)"
+            "ALTERADO_EM INTEGER NOT NULL," +
+            "EXCLUIDO INTEGER DEFAULT 0)"
         );
         // cria, caso n exista, a tabela de eventos;
         conexao.createStatement().executeUpdate(
@@ -131,6 +134,9 @@ public class Server {
                 rmireg_host = "localhost";
                 rmireg = LocateRegistry.createRegistry(rmireg_porta);
                 rmireg.bind(rmireg_ref_remota, stub);
+
+                // criando a thread responsavel por receber as requisicoes dos clientes;
+                List<PrintWriter> clientes = new ArrayList<PrintWriter>();
                 Thread socket_thread = new Thread(new Runnable() {
 					@Override
 					public void run() {
@@ -141,7 +147,7 @@ public class Server {
                                 try {
                                     Socket c = s.accept();
                                     PrintWriter out = new PrintWriter(c.getOutputStream(), true);
-                                    out.println("Bem-vindo ao servidor " + rmireg_ref_remota);
+                                    clientes.add(out);                                    
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -151,6 +157,24 @@ public class Server {
 					}
                 });
                 socket_thread.start();
+
+                // criando Thread de notificação de mensagens
+                Thread notificacao_thread = new Thread(new Runnable(){
+                    @Override
+                    public void run() {
+                        Notificador notificador = new Notificador(conexao);
+                        while (true) 
+                            try {
+                                notificador.despachar(clientes);
+                                // aguarda por 10 segundos antes de despachar novos
+                                // eventos;
+                                Thread.sleep(10000);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                });
+                notificacao_thread.start();
             }
         } catch (AlreadyBoundException e) {
             // se já existir um stub vinculado à referência informada, cai aqui nessa exceção.

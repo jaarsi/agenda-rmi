@@ -1,4 +1,4 @@
-package app.rmi_interfaces;
+package app.controllers;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -8,8 +8,9 @@ import java.util.List;
 import app.models.Pessoa;
 import app.models.Usuario;
 
-public interface PessoaRMIInterface extends Remote {
+public interface ServerRMIInterface extends Remote {
     public String echo() throws RemoteException;
+    public void logar(Usuario usuario) throws RemoteException, SQLException;
     public List<Pessoa> listar(Usuario usuario) throws RemoteException, SQLException; 
     public List<Pessoa> filtrar(Usuario usuario, String nome) throws RemoteException, SQLException;
     public Pessoa buscar(Usuario usuario, int id) throws RemoteException, SQLException;    

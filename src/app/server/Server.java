@@ -16,8 +16,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import app.controllers.PessoaController;
-import app.rmi_interfaces.PessoaRMIInterface;
+import app.controllers.ServerController;
+import app.controllers.ServerRMIInterface;
 
 public class Server {
     public static void main(final String args[]) throws Exception {
@@ -73,18 +73,38 @@ public class Server {
         // cria, caso n exista, a tabela PESSOA;
         conexao.createStatement().executeUpdate(
             "CREATE TABLE IF NOT EXISTS PESSOA (" + 
-            "ID         INTEGER PRIMARY KEY NOT NULL," + 
-            "NOME       TEXT                NOT NULL," + 
-            "ENDERECO   TEXT                NOT NULL)"
+            "ID INTEGER PRIMARY KEY NOT NULL," + 
+            "NOME TEXT NOT NULL," + 
+            "ENDERECO TEXT NOT NULL," +
+            "CRIADO_EM INTEGER NOT NULL, " +
+            "ALTERADO_EM INTEGER NOT NULL)"
         );
-
+        // cria, caso n exista, a tabela de eventos;
+        conexao.createStatement().executeUpdate(
+            "CREATE TABLE IF NOT EXISTS EVENTO (" + 
+            "ID INTEGER PRIMARY KEY NOT NULL," +
+            "PESSOA_ID INTEGER REFERENCES PESSOA(ID)," +
+            "USUARIO TEXT NOT NULL," + 
+            "SERVIDOR TEXT NOT NULL," + 
+            "OPERACAO TEXT NOT NULL," +
+            "DTHR_EVENTO INTEGER NOT NULL," +
+            "DESPACHADO INTEGER DEFAULT 0)"
+        );
+        // cria uma tabela temporária de usuarios logados;
+        conexao.createStatement().executeUpdate(
+            "CREATE TEMPORARY TABLE IF NOT EXISTS USUARIO_LOGADO (" + 
+            "ID INTEGER PRIMARY KEY NOT NULL," + 
+            "LOGIN TEXT UNIQUE ON CONFLICT REPLACE NOT NULL," + 
+            "SERVIDOR TEXT NOT NULL," +
+            "DTHR_LOGIN INTEGER NOT NULL)"
+        );
         // criação do "controller", que é responsável por validar
         // e repassar os dados recebidos para o modelo processar;
-        PessoaController controller = new PessoaController(conexao);
+        ServerController controller = new ServerController(conexao);
         // criação e exportação do stub, que é o objeto disponibilizado para 
         // o cliente remoto interagir com as funcionalidades disponibilizadas;
-        PessoaRMIInterface stub = 
-            (PessoaRMIInterface) UnicastRemoteObject.exportObject(controller, 0);
+        ServerRMIInterface stub = 
+            (ServerRMIInterface) UnicastRemoteObject.exportObject(controller, 0);
         // localiza onde o rmiregistry está sendo executado, a partir das 
         // informações passadas por parâmetro (host e porta) no momento da execução 
         // do programa. caso as uma das ou nenhuma informação sobre o rmiregistry 
@@ -102,7 +122,8 @@ public class Server {
                 // Aqui, o rmiregistry é criado localmente (localhost) e o stub
                 // vinculado à ele;
                 System.out.print(
-                    "O 'rmiregistry' informado não respondeu, criando localmente ...\n");
+                    "O 'rmiregistry' informado não respondeu, criando localmente ...\n"
+                );
                 rmireg_host = "localhost";
                 rmireg = LocateRegistry.createRegistry(rmireg_porta);
                 rmireg.bind(rmireg_ref_remota, stub);
@@ -121,6 +142,7 @@ public class Server {
         }
         System.out.printf(
             "Servidor pronto | 'rmiregistry' -> %s:%d | ref. remota %s\n",
-            rmireg_host, rmireg_porta, rmireg_ref_remota);
+            rmireg_host, rmireg_porta, rmireg_ref_remota
+        );
     }
 }

@@ -7,17 +7,18 @@ import java.rmi.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 import app.models.Pessoa;
 import app.models.Usuario;
-import app.rmi_interfaces.PessoaRMIInterface;
+import app.controllers.ServerRMIInterface;
 
 public class CLI {
     private Usuario usuario = null;
-    private PessoaRMIInterface stub = null;
+    private ServerRMIInterface stub = null;
     private String ref_remota;    
 
     private void identificar_usuario() {
@@ -25,30 +26,36 @@ public class CLI {
         this.usuario.login = this.input_str("Por favor, identifique-se: ");
     }
 
-    private void selecionar_servidor() throws RemoteException, NotBoundException {
+    private void selecionar_servidor() throws RemoteException, NotBoundException, SQLException {
         String rmireg_host = this.input_str("Informe o host do 'rmiregistry': ");
         int rmireg_porta = this.input_int("Informe a porta do 'rmiregistry': ");
         Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
         this.ref_remota = this.input_str(String.format(
             "Selecione um servidor entre esses (%s): ", 
-            String.join(",", rmireg.list())));
-        this.stub = (PessoaRMIInterface) rmireg.lookup(ref_remota);
+            String.join(",", rmireg.list()))
+        );
+        this.stub = (ServerRMIInterface) rmireg.lookup(ref_remota);
         this.stub.echo();
+
+        this.usuario.servidor = ref_remota;
+        this.usuario.dthr_login = new Date();
+        this.stub.logar(this.usuario);
 
         // inicializacao do socket aqui;
     }
 
     private int menu() {
         return input_int(
-                "1 - Listar todos os contatos\n" + 
-                "2 - Filtrar contatos por nome\n" + 
-                "3 - Buscar por código\n" + 
-                "4 - Adicionar um contato\n" + 
-                "5 - Alterar um contato\n" + 
-                "6 - Excluir um contato\n" + 
-                "7 - Selecionar servidor\n" + 
-                "0 - Finalizar sistema\n"
-                + "Informe o codigo da ação desejada: ");
+            "1 - Listar todos os contatos\n" + 
+            "2 - Filtrar contatos por nome\n" + 
+            "3 - Buscar por código\n" + 
+            "4 - Adicionar um contato\n" + 
+            "5 - Alterar um contato\n" + 
+            "6 - Excluir um contato\n" + 
+            "7 - Selecionar servidor\n" + 
+            "0 - Finalizar sistema\n"
+            + "Informe o codigo da ação desejada: "
+        );
     }
 
     private void listar() throws RemoteException, SQLException {
@@ -101,7 +108,8 @@ public class CLI {
         this.show_msg("Este procedimento excluirá o contato abaixo:\n");
         this.show_pessoa(p);
         String confirmacao = this.input_str(
-            "Confirmar exclusao? ('s' para SIM ou 'n' para NÃO): ");
+            "Confirmar exclusao? ('s' para SIM ou 'n' para NÃO): "
+        );
         if (confirmacao.equals("s")) {
             this.stub.excluir(this.usuario, p);
             this.show_msg("Contato excluído com sucesso!\n");
@@ -160,7 +168,8 @@ public class CLI {
                     this.selecionar_servidor();
                 this.show_msg(String.format(
                     "Bem-vindo %s, você está conectado ao servidor %s !\n", 
-                    this.usuario.login, this.ref_remota));
+                    this.usuario.login, this.ref_remota)
+                );
                 int opcao = this.menu();                
                 this.clearScreen();
                 switch (opcao) {
@@ -181,12 +190,14 @@ public class CLI {
                 this.show_msg("\n\n");
                 this.show_msg(
                     "A referência remota não existe ou servidor que "+
-                    "a hospeda está inoperante ou é inacançável ...");
+                    "a hospeda está inoperante ou é inacançável ..."
+                );
                 this.stub = null;                    
             } catch (ConnectException e) {
                 this.show_msg("\n\n");
                 this.show_msg(
-                    "O servidor que hospeda a referência remota não responde ...");
+                    "O servidor que hospeda a referência remota não responde ..."
+                );
                 this.stub = null;                    
             } catch (RemoteException e) {
                 this.show_msg("\n\n");

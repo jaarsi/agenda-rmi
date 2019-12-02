@@ -135,7 +135,11 @@ public class Server {
                 rmireg = LocateRegistry.createRegistry(rmireg_porta);
                 rmireg.bind(rmireg_ref_remota, stub);
 
-                // criando a thread responsavel por receber as requisicoes dos clientes;
+                // criando a thread responsavel por receber as requisicoes dos 
+                // sockets dos clientes. ele tem a função de armazenar em um array
+                // o "escritor" dos clientes que se conectam ao servidor, para 
+                // de ser usado na classe 'Notificador'.
+                // ele só é criado qdo rmiregistry é local;
                 List<PrintWriter> clientes = new ArrayList<PrintWriter>();
                 Thread socket_thread = new Thread(new Runnable() {
 					@Override
@@ -158,7 +162,11 @@ public class Server {
                 });
                 socket_thread.start();
 
-                // criando Thread de notificação de mensagens
+                // criando Thread de notificação de mensagens;
+                // a classe 'Notificador',  tem a função de carregar os eventos 
+                // não despachados, registrados no banco de dados e disparar esses
+                // eventos para cada cliente conectado ao socket do servidor.
+                // ele despacha os eventos a cada 10 segundos;
                 Thread notificacao_thread = new Thread(new Runnable(){
                     @Override
                     public void run() {

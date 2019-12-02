@@ -17,7 +17,7 @@ public class Evento implements Serializable {
     public String toString() {
         if (this.pessoa != null) 
             return String.format(
-                "O usuario %s acabou de %s o registro [%d] %s no servidor %s em %tc", 
+                "O usuario %s acabou de %s o registro '[%d] %s' no servidor %s em %tc", 
                 this.usuario, this.operacao, this.pessoa.id, this.pessoa.nome, 
                 this.servidor, this.dthr_evento
             );

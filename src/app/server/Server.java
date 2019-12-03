@@ -60,7 +60,7 @@ public class Server {
             // a ajuda;
             cmd = null;
             System.out.println(e.getMessage());
-            new HelpFormatter().printHelp("agenda-rmi", options);
+            new HelpFormatter().printHelp("agenda-rmi-server", options);
             System.exit(0);
         }
 

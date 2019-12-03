@@ -179,7 +179,7 @@ public class CLI {
             System.out.printf("%s\n", p.toString());
     }
 
-    private void clearScreen() {  
+    protected void clearScreen() {  
         System.out.print("\033[H\033[2J");  
         System.out.flush();  
     }

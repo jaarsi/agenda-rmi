@@ -60,8 +60,8 @@ public class CLI {
                     while (true) 
                         try {
                             String msg = in.readLine();
-                            if (msg.indexOf(self.usuario.login) == -1) 
-                                continue;
+                            // if (msg.indexOf(self.usuario.login) == -1) 
+                            //     continue;
                             msg = "\n\n" + msg + "\n\n";                            
                             self.show_msg(msg);
                         } catch (IOException e) {

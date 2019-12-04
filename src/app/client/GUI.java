@@ -1,7 +1,6 @@
 package app.client;
 
 import java.util.List;
-import static java.util.stream.Collectors.joining;
 
 import javax.swing.JOptionPane;
 
@@ -34,9 +33,9 @@ public class GUI extends CLI {
 
     @Override
     protected void show_pessoa(List<Pessoa> pessoas) {
-        String s = pessoas.stream()
-            .map(p -> p.toString())
-            .collect(joining("\n"));
+        String s = "";
+        for (Pessoa p: pessoas)
+            s = s + p.toString() + "\n";
         this.show_msg(s);
     }
 

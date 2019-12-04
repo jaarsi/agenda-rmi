@@ -71,15 +71,18 @@ public class CLI {
 
     private int menu() {
         return input_int(
+            String.format(
+                "Bem-vindo %s, voce esta conectado ao servidor %s !\n", 
+                this.usuario.login, this.ref_remota) +
             "1 - Listar todos os contatos\n" + 
             "2 - Filtrar contatos por nome\n" + 
-            "3 - Buscar por código\n" + 
+            "3 - Buscar por codigo\n" + 
             "4 - Adicionar um contato\n" + 
             "5 - Alterar um contato\n" + 
             "6 - Excluir um contato\n" + 
             "7 - Selecionar servidor\n" + 
             "0 - Finalizar sistema\n"
-            + "Informe o codigo da ação desejada: "
+            + "Informe o codigo da acao desejada: "
         );
     }
 
@@ -96,7 +99,7 @@ public class CLI {
         int id = this.input_int("Informe o codigo do contato: ");
         Pessoa p = this.stub.buscar(this.usuario, id);
         if (p == null)
-            throw new SQLException("Não existe nenhum contato com o codigo informado ...");
+            throw new SQLException("Nao existe nenhum contato com o codigo informado ...");
         this.show_pessoa(p);
     }
 
@@ -112,7 +115,7 @@ public class CLI {
         int id = this.input_int("Informe o codigo do contato que deseja editar: ");
         Pessoa p = this.stub.buscar(this.usuario, id);
         if (p == null) 
-            throw new SQLException("Não existe nenhum contato com o codigo informado ...");
+            throw new SQLException("Nao existe nenhum contato com o codigo informado ...");
         String nome = this.input_str(
             String.format("Informe o nome do contato: (%s) ", p.nome));
         if (!nome.trim().isBlank())
@@ -129,15 +132,15 @@ public class CLI {
         int id = this.input_int("Informe o codigo do contato que deseja excluir: ");
         Pessoa p = this.stub.buscar(this.usuario, id);
         if (p == null) 
-            throw new SQLException("Não existe nenhum contato com o codigo informado ...");
-        this.show_msg("Este procedimento excluirá o contato abaixo:\n");
+            throw new SQLException("Nao existe nenhum contato com o codigo informado ...");
+        this.show_msg("Este procedimento excluira o contato abaixo:\n");
         this.show_pessoa(p);
         String confirmacao = this.input_str(
-            "Confirmar exclusao? ('s' para SIM ou 'n' para NÃO): "
+            "Confirmar exclusao? ('s' para SIM ou 'n' para NAO): "
         );
         if (confirmacao.equals("s")) {
             this.stub.excluir(this.usuario, p);
-            this.show_msg("Contato excluído com sucesso!\n");
+            this.show_msg("Contato excluido com sucesso!\n");
         }
     }
 
@@ -156,7 +159,7 @@ public class CLI {
                 n = leitor.nextInt();
                 break;
             } catch (InputMismatchException e) {
-                this.show_msg("\nInforme um numero inteiro ...\n\n"); 
+                this.show_msg("\nInforme um numero inteiro...\n\n"); 
                 leitor.nextLine();               
             }
         return n;
@@ -191,10 +194,6 @@ public class CLI {
                     this.identificar_usuario();
                 if (this.stub == null)
                     this.selecionar_servidor();
-                this.show_msg(String.format(
-                    "Bem-vindo %s, você está conectado ao servidor %s !\n", 
-                    this.usuario.login, this.ref_remota)
-                );
                 int opcao = this.menu();                
                 this.clearScreen();
                 switch (opcao) {
@@ -206,22 +205,22 @@ public class CLI {
                     case 6: { this.excluir(); break; }
                     case 7: { this.selecionar_servidor(); break; }
                     case 0: { System.exit(0); break; }
-                    default: this.show_msg("Opção incorreta ...\n");
+                    default: this.show_msg("Opcao incorreta ...\n");
                 }
             } catch (UnknownHostException e) {
                 this.show_msg("\n\n");
-                this.show_msg("O host fornecido é desconhecido ...");
+                this.show_msg("O host fornecido e desconhecido ...");
             } catch (NotBoundException e) {
                 this.show_msg("\n\n");
                 this.show_msg(
-                    "A referência remota não existe ou servidor que "+
-                    "a hospeda está inoperante ou é inacançável ..."
+                    "A referencia remota nao existe ou servidor que "+
+                    "a hospeda esta inoperante ou e inacancavel ..."
                 );
                 this.stub = null;                    
             } catch (ConnectException e) {
                 this.show_msg("\n\n");
                 this.show_msg(
-                    "O servidor que hospeda a referência remota não responde ..."
+                    "O servidor que hospeda a referencia remota nao responde ..."
                 );
                 this.stub = null;                    
             } catch (RemoteException e) {

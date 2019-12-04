@@ -1,7 +1,6 @@
 package app.client;
 
 import java.util.List;
-import java.util.stream.Collector;
 import static java.util.stream.Collectors.joining;
 
 import javax.swing.JOptionPane;
@@ -28,7 +27,9 @@ public class GUI extends CLI {
 
     @Override
     protected void show_msg(String msg) {
-        JOptionPane.showMessageDialog(null, msg);
+        msg = msg.trim();
+        if (!msg.isBlank())
+            JOptionPane.showMessageDialog(null, msg);
     }
 
     @Override

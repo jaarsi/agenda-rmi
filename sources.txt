@@ -1,0 +1,14 @@
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\client\CLI.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\client\Client.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\client\GUI.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\controllers\ServerController.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\controllers\ServerRMIInterface.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\models\CRUDInterface.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\models\Evento.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\models\EventoDAO.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\models\Pessoa.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\models\PessoaDAO.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\models\Usuario.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\models\UsuarioDAO.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\server\Notificador.java
+C:\Users\Lenovo\Desktop\projetos\agenda-rmi\src\app\server\Server.java

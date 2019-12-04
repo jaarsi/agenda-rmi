@@ -11,7 +11,7 @@ import org.apache.commons.cli.ParseException;
 public class Client {
     public static void main(String[] args) throws Exception {
         Options options = new Options();
-        Option opt = new Option("gui", "Força a exportação da referência remota");
+        Option opt = new Option("gui", "Executa com interface grafica");
         options.addOption(opt);
 
         CommandLineParser parser = new DefaultParser();

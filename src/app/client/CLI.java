@@ -3,6 +3,7 @@ package app.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
@@ -23,6 +24,8 @@ import app.controllers.ServerRMIInterface;
 public class CLI {
     private Usuario usuario = null;
     private ServerRMIInterface stub = null;
+    private String rmireg_host;
+    private int rmireg_porta;    
     private String ref_remota;    
 
     private void identificar_usuario() {
@@ -31,8 +34,8 @@ public class CLI {
     }
 
     private void selecionar_servidor() throws RemoteException, NotBoundException, SQLException {
-        String rmireg_host = this.input_str("Informe o host do 'rmiregistry': ");
-        int rmireg_porta = this.input_int("Informe a porta do 'rmiregistry': ");
+        this.rmireg_host = this.input_str("Informe o host do 'rmiregistry': ");
+        this.rmireg_porta = this.input_int("Informe a porta do 'rmiregistry': ");
         Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
         this.ref_remota = this.input_str(String.format(
             "Selecione um servidor entre esses (%s): ", 
@@ -51,12 +54,15 @@ public class CLI {
 			@Override
 			public void run() {
                 try {
-                    Socket s = new Socket(rmireg_host, rmireg_porta+1);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                    Socket s = new Socket(self.rmireg_host, self.rmireg_porta+1);
+                    BufferedReader in = 
+                        new BufferedReader(new InputStreamReader(s.getInputStream()));
                     while (true) 
                         try {
                             String msg = in.readLine();
-                            msg = "\n\n" + msg + "\n\n";
+                            if (msg.indexOf(self.usuario.login) == -1) 
+                                continue;
+                            msg = "\n\n" + msg + "\n\n";                            
                             self.show_msg(msg);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -80,7 +86,8 @@ public class CLI {
             "4 - Adicionar um contato\n" + 
             "5 - Alterar um contato\n" + 
             "6 - Excluir um contato\n" + 
-            "7 - Selecionar servidor\n" + 
+            "7 - Cadastro combinado\n" +
+            "8 - Selecionar servidor\n" + 
             "0 - Finalizar sistema\n"
             + "Informe o codigo da acao desejada: "
         );
@@ -144,6 +151,31 @@ public class CLI {
         }
     }
 
+    private void cadastro_combinado() throws SQLException, IOException {
+        Socket s = null;
+        try {
+            this.stub.cadastro_combinado();
+            Thread.sleep(3000);
+            s = new Socket(this.rmireg_host, 5555);
+            BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+            while (true) {
+                String msg = in.readLine();
+                if (msg.equals("fim")) 
+                    break;
+                else if (msg.lastIndexOf(":") > 0)                     
+                    out.printf("%s\n", this.input_str(msg));
+                else
+                    this.show_msg(msg+"\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (s != null)
+                s.close();
+        }
+    }
+
     protected String input_str(String msg) {
         System.out.print(msg);
         Scanner leitor = new Scanner(System.in);
@@ -203,7 +235,8 @@ public class CLI {
                     case 4: { this.adicionar(); break; }
                     case 5: { this.alterar(); break; }
                     case 6: { this.excluir(); break; }
-                    case 7: { this.selecionar_servidor(); break; }
+                    case 7: { this.cadastro_combinado(); break; }
+                    case 8: { this.selecionar_servidor(); break; }
                     case 0: { System.exit(0); break; }
                     default: this.show_msg("Opcao incorreta ...\n");
                 }

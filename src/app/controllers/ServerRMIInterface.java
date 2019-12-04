@@ -1,5 +1,6 @@
 package app.controllers;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -16,5 +17,6 @@ public interface ServerRMIInterface extends Remote {
     public Pessoa buscar(Usuario usuario, int id) throws RemoteException, SQLException;    
     public Pessoa adicionar(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException;
     public Pessoa alterar(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException;
-    public Pessoa excluir(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException;    
+    public Pessoa excluir(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException;
+    public void cadastro_combinado() throws RemoteException, SQLException;
 }

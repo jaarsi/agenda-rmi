@@ -140,6 +140,7 @@ public class Server {
                 // o "escritor" dos clientes que se conectam ao servidor, para 
                 // de ser usado na classe 'Notificador'.
                 // ele só é criado qdo rmiregistry é local;
+                
                 List<PrintWriter> clientes = new ArrayList<PrintWriter>();
                 Thread socket_thread = new Thread(new Runnable() {
 					@Override

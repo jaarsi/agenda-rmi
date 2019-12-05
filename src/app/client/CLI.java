@@ -125,11 +125,11 @@ public class CLI {
             throw new SQLException("Nao existe nenhum contato com o codigo informado ...");
         String nome = this.input_str(
             String.format("Informe o nome do contato: (%s) ", p.nome));
-        if (!nome.trim().isBlank())
+        if (!nome.trim().isEmpty())
             p.nome = nome;
         String endereco = this.input_str(
             String.format("Informe o endereco do contato: (%s)\n", p.endereco));
-        if (!endereco.trim().isBlank())
+        if (!endereco.trim().isEmpty())
             p.endereco = endereco;
         this.stub.alterar(this.usuario, p);
         this.show_msg("Contato alterado com sucesso!\n");
@@ -203,13 +203,15 @@ public class CLI {
 
     protected void show_pessoa(Pessoa pessoa) {
         System.out.printf("%-5s %-15s %-50s\n", "ID", "Nome", "Endereco");
-        System.out.print("-".repeat(70)+'\n');
+        //System.out.print("-".repeat(70)+'\n');
+        System.out.println("\n");
         System.out.printf("%s\n", pessoa.toString());
     }
 
     protected void show_pessoa(List<Pessoa> pessoas) {
         System.out.printf("%-5s %-15s %-50s\n", "ID", "Nome", "Endereco");
-        System.out.print("-".repeat(70)+'\n');
+        //System.out.print("-".repeat(70)+'\n');
+        System.out.println("\n");
         for (Pessoa p: pessoas)            
             System.out.printf("%s\n", p.toString());
     }

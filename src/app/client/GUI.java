@@ -27,7 +27,7 @@ public class GUI extends CLI {
     @Override
     protected void show_msg(String msg) {
         msg = msg.trim();
-        if (!msg.isBlank())
+        if (!msg.isEmpty())
             JOptionPane.showMessageDialog(null, msg);
     }
 

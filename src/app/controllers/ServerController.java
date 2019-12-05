@@ -39,9 +39,9 @@ public class ServerController implements ServerRMIInterface {
 
     @Override
     public Pessoa adicionar(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException {
-        if (pessoa.nome.trim().isBlank())
+        if (pessoa.nome.trim().isEmpty())
             throw new SQLException("Preencha o nome da pessoa.");
-        if (pessoa.endereco.trim().isBlank())
+        if (pessoa.endereco.trim().isEmpty())
             throw new SQLException("Preencha o endereco da pessoa.");
 
         pessoa.criado_em = new Date();
@@ -64,9 +64,9 @@ public class ServerController implements ServerRMIInterface {
 
     @Override
     public Pessoa alterar(Usuario usuario, Pessoa pessoa) throws RemoteException, SQLException {
-        if (pessoa.nome.trim().isBlank())
+        if (pessoa.nome.trim().isEmpty())
             throw new SQLException("Preencha o nome da pessoa.");
-        if (pessoa.endereco.trim().isBlank())
+        if (pessoa.endereco.trim().isEmpty())
             throw new SQLException("Preencha o endereco da pessoa.");
 
         pessoa.alterado_em = new Date();

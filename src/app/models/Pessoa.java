@@ -26,6 +26,6 @@ public class Pessoa implements Serializable {
 
 	@Override
     public String toString() {
-        return String.format("%-5d %-15s %-50s", this.id, this.nome, this.endereco);
+        return String.format("%-5d %-45s %-50s", this.id, this.nome, this.endereco);
     }
 }

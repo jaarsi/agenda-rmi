@@ -89,7 +89,6 @@ public class CLI {
             "5 - Alterar um contato\n" + 
             "6 - Excluir um contato\n" + 
             "7 - Cadastro combinado\n" +
-            "8 - Selecionar servidor\n" + 
             "0 - Finalizar sistema\n" + 
             "Informe o codigo da acao desejada: "
         );
@@ -211,14 +210,12 @@ public class CLI {
     }
 
     protected void show_pessoa(Pessoa pessoa) {
-        System.out.printf("%-5s %-15s %-50s\n", "ID", "Nome", "Endereco");
-        System.out.println("\n");
+        System.out.printf("%-5s %-45s %-50s\n", "ID", "Nome", "Endereco");
         System.out.printf("%s\n", pessoa.toString());
     }
 
     protected void show_pessoa(List<Pessoa> pessoas) {
-        System.out.printf("%-5s %-15s %-50s\n", "ID", "Nome", "Endereco");
-        System.out.println("\n");
+        System.out.printf("%-5s %-45s %-50s\n", "ID", "Nome", "Endereco");
         for (Pessoa p: pessoas)            
             System.out.printf("%s\n", p.toString());
     }
@@ -245,35 +242,43 @@ public class CLI {
                     case 5: { this.alterar(); break; }
                     case 6: { this.excluir(); break; }
                     case 7: { this.cadastro_combinado(); break; }
-                    case 8: { this.selecionar_servidor(); break; }
                     case 0: { System.exit(0); break; }
                     default: this.show_msg("Opcao incorreta ...\n");
                 }
             } catch (UnknownHostException e) {
                 this.show_msg("\n\n");
                 this.show_msg("O host fornecido e desconhecido ...");
+                this.show_msg(e.getMessage());
+                e.printStackTrace();
             } catch (NotBoundException e) {
                 this.show_msg("\n\n");
                 this.show_msg(
                     "A referencia remota nao existe ou servidor que "+
                     "a hospeda esta inoperante ou e inacancavel ..."
                 );
-                this.stub = null;                    
+                this.stub = null;
+                this.show_msg(e.getMessage());
+                e.printStackTrace();
             } catch (ConnectException e) {
                 this.show_msg("\n\n");
                 this.show_msg(
                     "O servidor que hospeda a referencia remota nao responde ..."
                 );
-                this.stub = null;                    
+                this.stub = null;
+                this.show_msg(e.getMessage());
+                e.printStackTrace();
             } catch (RemoteException e) {
                 this.show_msg("\n\n");
+                this.show_msg(e.getMessage());
                 e.printStackTrace();
             } catch (SQLException e) {
                 this.show_msg("\n\n");
                 this.show_msg(e.getMessage());
+                e.printStackTrace();
             } catch (Exception e) {
                 this.show_msg("\n\n");
-                this.show_msg(e.getClass().getName() + e.getMessage());
+                this.show_msg(e.getMessage());
+                e.printStackTrace();
             } finally {
                 this.show_msg("\n\n");
             }

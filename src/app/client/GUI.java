@@ -8,6 +8,18 @@ import app.models.Pessoa;
 
 public class GUI extends CLI {
     @Override
+    protected String select_str(String msg, String[] escolhas) { 
+        return (String) JOptionPane.showInputDialog(
+            null, 
+            msg,
+            "Selecione um dos valores", 
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            escolhas, // Array of choices
+            escolhas[1]);       
+    }
+
+    @Override
     protected int input_int(String msg) {
         while (true) {
             String n = JOptionPane.showInputDialog(msg).trim();

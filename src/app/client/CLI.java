@@ -34,12 +34,14 @@ public class CLI {
     }
 
     private void selecionar_servidor() throws RemoteException, NotBoundException, SQLException {
-        this.rmireg_host = this.input_str("Informe o host do 'rmiregistry': ");
+        this.rmireg_host = this.input_str("Informe o host do 'rmiregistry': (localhost) ");
+        if (this.rmireg_host.trim().equals("")) 
+            this.rmireg_host = "localhost";
         this.rmireg_porta = this.input_int("Informe a porta do 'rmiregistry': ");
         Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
-        this.ref_remota = this.input_str(String.format(
-            "Selecione um servidor entre esses (%s): ", 
-            String.join(",", rmireg.list()))
+        this.ref_remota = this.select_str(
+            "Selecione um servidor dos servidores acima: ", 
+            rmireg.list()
         );
         this.stub = (ServerRMIInterface) rmireg.lookup(ref_remota);
         this.stub.echo();
@@ -88,8 +90,8 @@ public class CLI {
             "6 - Excluir um contato\n" + 
             "7 - Cadastro combinado\n" +
             "8 - Selecionar servidor\n" + 
-            "0 - Finalizar sistema\n"
-            + "Informe o codigo da acao desejada: "
+            "0 - Finalizar sistema\n" + 
+            "Informe o codigo da acao desejada: "
         );
     }
 
@@ -176,6 +178,13 @@ public class CLI {
         }
     }
 
+    protected String select_str(String msg, String[] escolhas) {
+        this.show_msg("\n");
+        for (String e: escolhas) 
+            this.show_msg("--> " + e + "\n");
+        return this.input_str(msg);
+    }
+
     protected String input_str(String msg) {
         System.out.print(msg);
         Scanner leitor = new Scanner(System.in);
@@ -203,14 +212,12 @@ public class CLI {
 
     protected void show_pessoa(Pessoa pessoa) {
         System.out.printf("%-5s %-15s %-50s\n", "ID", "Nome", "Endereco");
-        //System.out.print("-".repeat(70)+'\n');
         System.out.println("\n");
         System.out.printf("%s\n", pessoa.toString());
     }
 
     protected void show_pessoa(List<Pessoa> pessoas) {
         System.out.printf("%-5s %-15s %-50s\n", "ID", "Nome", "Endereco");
-        //System.out.print("-".repeat(70)+'\n');
         System.out.println("\n");
         for (Pessoa p: pessoas)            
             System.out.printf("%s\n", p.toString());

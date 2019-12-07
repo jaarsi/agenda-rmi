@@ -163,10 +163,10 @@ public class ServerController implements ServerRMIInterface {
                     p.endereco = p.endereco + " " + u2_in.readLine();
                     self.adicionar(null, p);                        
                     u1_out.println(String.format(
-                        "Usuário [%d] %s cadastrado com sucesso!\n", p.id, p.nome
+                        "Usuário [%d] %s cadastrado com sucesso!", p.id, p.nome
                     ));                        
                     u2_out.println(String.format(
-                        "Usuário [%d] %s cadastrado com sucesso!\n", p.id, p.nome
+                        "Usuário [%d] %s cadastrado com sucesso!", p.id, p.nome
                     ));                        
                     u1_out.println("fim");
                     u2_out.println("fim");

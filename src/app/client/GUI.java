@@ -12,11 +12,11 @@ public class GUI extends CLI {
         return (String) JOptionPane.showInputDialog(
             null, 
             msg,
-            "Selecione um dos valores", 
+            "Selecione um dos valores ...", 
             JOptionPane.QUESTION_MESSAGE, 
             null, 
             escolhas, // Array of choices
-            escolhas[1]);       
+            escolhas.length > 0 ? escolhas[1] : "");
     }
 
     @Override

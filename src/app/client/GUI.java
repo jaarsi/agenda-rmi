@@ -16,7 +16,7 @@ public class GUI extends CLI {
             JOptionPane.QUESTION_MESSAGE, 
             null, 
             escolhas, // Array of choices
-            escolhas.length > 0 ? escolhas[1] : "");
+            escolhas.length > 0 ? escolhas[0] : "");
     }
 
     @Override

@@ -13,15 +13,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Scanner;
 
 import app.models.Pessoa;
 import app.models.Usuario;
 import app.controllers.ServerRMIInterface;
 
 public class CLI {
+    public static final String CRLF = System.getProperty("line.separator");
     private Usuario usuario = null;
     private ServerRMIInterface stub = null;
     private String rmireg_host;
@@ -55,8 +54,9 @@ public class CLI {
         Thread socket_thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+                Socket s = null;
                 try {
-                    Socket s = new Socket(self.rmireg_host, self.rmireg_porta+1);
+                    s = new Socket(self.rmireg_host, self.rmireg_porta+1);
                     BufferedReader in = 
                         new BufferedReader(new InputStreamReader(s.getInputStream()));
                     while (true) 
@@ -64,13 +64,19 @@ public class CLI {
                             String msg = in.readLine();
                             // if (msg.indexOf(self.usuario.login) == -1) 
                             //     continue;
-                            msg = "\n\n" + msg + "\n\n";                            
+                            msg = CRLF + CRLF + msg + CRLF + CRLF;
                             self.show_msg(msg);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }                        
                 } catch (IOException e) {
                     e.printStackTrace();
+                } finally {
+                    try {
+                        s.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 			}
         });
@@ -80,16 +86,16 @@ public class CLI {
     private int menu() {
         return input_int(
             String.format(
-                "Bem-vindo %s, voce esta conectado ao servidor %s !\n", 
+                "Bem-vindo %s, voce esta conectado ao servidor %s !" + CRLF, 
                 this.usuario.login, this.ref_remota) +
-            "1 - Listar todos os contatos\n" + 
-            "2 - Filtrar contatos por nome\n" + 
-            "3 - Buscar por codigo\n" + 
-            "4 - Adicionar um contato\n" + 
-            "5 - Alterar um contato\n" + 
-            "6 - Excluir um contato\n" + 
-            "7 - Cadastro combinado\n" +
-            "0 - Finalizar sistema\n" + 
+            "1 - Listar todos os contatos" + CRLF +
+            "2 - Filtrar contatos por nome" + CRLF +
+            "3 - Buscar por codigo" + CRLF +
+            "4 - Adicionar um contato" + CRLF +
+            "5 - Alterar um contato" + CRLF +
+            "6 - Excluir um contato" + CRLF +
+            "7 - Cadastro combinado" + CRLF +
+            "0 - Finalizar sistema" + CRLF +
             "Informe o codigo da acao desejada: "
         );
     }
@@ -113,10 +119,10 @@ public class CLI {
 
     private void adicionar() throws RemoteException, SQLException {
         String nome = this.input_str("Informe o nome do contato: ");
-        String endereco = this.input_str("Informe o endereco do contato:\n");
+        String endereco = this.input_str("Informe o endereco do contato: " + CRLF);
         Pessoa p = new Pessoa(0, nome, endereco);
         this.stub.adicionar(this.usuario, p);
-        this.show_msg("Contato cadastrado com sucesso!\n");
+        this.show_msg("Contato cadastrado com sucesso!" + CRLF);
     }
 
     private void alterar() throws RemoteException, SQLException {
@@ -129,11 +135,11 @@ public class CLI {
         if (!nome.trim().isEmpty())
             p.nome = nome;
         String endereco = this.input_str(
-            String.format("Informe o endereco do contato: (%s)\n", p.endereco));
+            String.format("Informe o endereco do contato: (%s)" + CRLF, p.endereco));
         if (!endereco.trim().isEmpty())
             p.endereco = endereco;
         this.stub.alterar(this.usuario, p);
-        this.show_msg("Contato alterado com sucesso!\n");
+        this.show_msg("Contato alterado com sucesso!" + CRLF);
     }
 
     private void excluir() throws RemoteException, SQLException {
@@ -141,14 +147,14 @@ public class CLI {
         Pessoa p = this.stub.buscar(this.usuario, id);
         if (p == null) 
             throw new SQLException("Nao existe nenhum contato com o codigo informado ...");
-        this.show_msg("Este procedimento excluira o contato abaixo:\n");
+        this.show_msg("Este procedimento excluira o contato abaixo:" + CRLF);
         this.show_pessoa(p);
         String confirmacao = this.input_str(
             "Confirmar exclusao? ('s' para SIM ou 'n' para NAO): "
         );
         if (confirmacao.equals("s")) {
             this.stub.excluir(this.usuario, p);
-            this.show_msg("Contato excluido com sucesso!\n");
+            this.show_msg("Contato excluido com sucesso!" + CRLF);
         }
     }
 
@@ -164,10 +170,10 @@ public class CLI {
                 String msg = in.readLine();
                 if (msg.equals("fim")) 
                     break;
-                else if (msg.lastIndexOf(":") > 0)                     
-                    out.printf("%s\n", this.input_str(msg));
+                else if (msg.lastIndexOf(":") > 0)
+                    out.printf("%s" + CRLF, this.input_str(msg));
                 else
-                    this.show_msg(msg+"\n");
+                    this.show_msg(msg + CRLF);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,29 +184,26 @@ public class CLI {
     }
 
     protected String select_str(String msg, String[] escolhas) {
-        this.show_msg("\n");
+        this.show_msg(CRLF);
         for (String e: escolhas) 
-            this.show_msg("--> " + e + "\n");
+            this.show_msg("--> " + e + CRLF);
         return this.input_str(msg);
     }
 
     protected String input_str(String msg) {
         System.out.print(msg);
-        Scanner leitor = new Scanner(System.in);
-        return leitor.nextLine().trim();
+        return System.console().readLine().trim();
     }
 
     protected int input_int(String msg) {
         int n = 0;
-        Scanner leitor = new Scanner(System.in);
         while (true) 
             try{
                 System.out.print(msg);
-                n = leitor.nextInt();
+                n = Integer.parseInt(System.console().readLine());
                 break;
-            } catch (InputMismatchException e) {
-                this.show_msg("\nInforme um numero inteiro...\n\n"); 
-                leitor.nextLine();               
+            } catch (Exception e) {
+                this.show_msg(CRLF + "Informe um numero inteiro..." + CRLF + CRLF); 
             }
         return n;
     }
@@ -210,14 +213,14 @@ public class CLI {
     }
 
     protected void show_pessoa(Pessoa pessoa) {
-        System.out.printf("%-5s %-45s %-50s\n", "ID", "Nome", "Endereco");
-        System.out.printf("%s\n", pessoa.toString());
+        System.out.printf("%-5s %-45s %-50s" + CRLF, "ID", "Nome", "Endereco");
+        System.out.printf("%s" + CRLF, pessoa.toString());
     }
 
     protected void show_pessoa(List<Pessoa> pessoas) {
-        System.out.printf("%-5s %-45s %-50s\n", "ID", "Nome", "Endereco");
+        System.out.printf("%-5s %-45s %-50s" + CRLF, "ID", "Nome", "Endereco");
         for (Pessoa p: pessoas)            
-            System.out.printf("%s\n", p.toString());
+            System.out.printf("%s" + CRLF, p.toString());
     }
 
     protected void clearScreen() {  
@@ -243,15 +246,15 @@ public class CLI {
                     case 6: { this.excluir(); break; }
                     case 7: { this.cadastro_combinado(); break; }
                     case 0: { System.exit(0); break; }
-                    default: this.show_msg("Opcao incorreta ...\n");
+                    default: this.show_msg("Opcao incorreta ..." + CRLF);
                 }
             } catch (UnknownHostException e) {
-                this.show_msg("\n\n");
+                this.show_msg(CRLF + CRLF);
                 this.show_msg("O host fornecido e desconhecido ...");
                 this.show_msg(e.getMessage());
                 e.printStackTrace();
             } catch (NotBoundException e) {
-                this.show_msg("\n\n");
+                this.show_msg(CRLF + CRLF);
                 this.show_msg(
                     "A referencia remota nao existe ou servidor que "+
                     "a hospeda esta inoperante ou e inacancavel ..."
@@ -260,7 +263,7 @@ public class CLI {
                 this.show_msg(e.getMessage());
                 e.printStackTrace();
             } catch (ConnectException e) {
-                this.show_msg("\n\n");
+                this.show_msg(CRLF + CRLF);
                 this.show_msg(
                     "O servidor que hospeda a referencia remota nao responde ..."
                 );
@@ -268,19 +271,19 @@ public class CLI {
                 this.show_msg(e.getMessage());
                 e.printStackTrace();
             } catch (RemoteException e) {
-                this.show_msg("\n\n");
+                this.show_msg(CRLF + CRLF);
                 this.show_msg(e.getMessage());
                 e.printStackTrace();
             } catch (SQLException e) {
-                this.show_msg("\n\n");
+                this.show_msg(CRLF + CRLF);
                 this.show_msg(e.getMessage());
                 e.printStackTrace();
             } catch (Exception e) {
-                this.show_msg("\n\n");
+                this.show_msg(CRLF + CRLF);
                 this.show_msg(e.getMessage());
                 e.printStackTrace();
             } finally {
-                this.show_msg("\n\n");
+                this.show_msg(CRLF + CRLF);
             }
     }
 }

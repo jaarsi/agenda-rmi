@@ -21,16 +21,10 @@ import app.models.UsuarioDAO;
 
 public class ServerController implements ServerRMIInterface {
     private Connection conexao = null;
-    private ServerSocket socket = null;
-    private boolean executando_cad_comb = false;
+    private static boolean executando_cad_comb = false;
 
     public ServerController(Connection conexao) {
-        this.conexao = conexao;        
-        try {
-            this.socket = new ServerSocket(5555);
-        } catch (IOException e) {
-            // nada
-        }
+        this.conexao = conexao;
     }
 
     @Override
@@ -127,30 +121,33 @@ public class ServerController implements ServerRMIInterface {
         ev.dthr_evento = new Date();
         ev.despachado = false;
         new EventoDAO().adicionar(this.conexao, ev);
-
     }
 
     @Override
     public void cadastro_combinado() throws RemoteException, SQLException {
-        if (this.executando_cad_comb)
+        if (ServerController.executando_cad_comb)
             return;
 
         ServerController self = this;
-        new Thread(new Runnable(){
+        new Thread(new Runnable(){        
             @Override
             public void run() {
+                ServerSocket s = null;
+                PrintWriter u1_out = null;
+                PrintWriter u2_out = null;
                 try {
-                    self.executando_cad_comb = true;
-                    Pessoa p = new Pessoa();
-                    Socket u1 = self.socket.accept();                    
+                    ServerController.executando_cad_comb = true;
+                    s = new ServerSocket(2001);
+                    Socket u1 = s.accept();
                     BufferedReader u1_in = new BufferedReader(new InputStreamReader(u1.getInputStream()));
-                    PrintWriter u1_out = new PrintWriter(u1.getOutputStream(), true);
+                    u1_out = new PrintWriter(u1.getOutputStream(), true);
                     u1_out.println("Aguardando o outro cliente ...");
-                    Socket u2 = self.socket.accept();
+                    Socket u2 = s.accept();
                     BufferedReader u2_in = new BufferedReader(new InputStreamReader(u2.getInputStream()));
-                    PrintWriter u2_out = new PrintWriter(u2.getOutputStream(), true);
+                    u2_out = new PrintWriter(u2.getOutputStream(), true);
                     u2_out.println("Aguarde enquanto o cliente 1 preenche os dados ...");
                     u1_out.println("Informe o primeiro nome do contato: ");
+                    Pessoa p = new Pessoa();                    
                     p.nome = u1_in.readLine();
                     u1_out.println("Aguarde enquanto o cliente 2 preenche os dados ...");
                     u2_out.println("Informe o sobrenome do contato: ");
@@ -161,20 +158,22 @@ public class ServerController implements ServerRMIInterface {
                     u1_out.println("Aguarde enquanto o cliente 2 preenche os dados ...");
                     u2_out.println("Informe bairro e cidade do contato: ");
                     p.endereco = p.endereco + " " + u2_in.readLine();
-                    self.adicionar(null, p);                        
-                    u1_out.println(String.format(
-                        "Usuário [%d] %s cadastrado com sucesso!", p.id, p.nome
-                    ));                        
-                    u2_out.println(String.format(
-                        "Usuário [%d] %s cadastrado com sucesso!", p.id, p.nome
-                    ));                        
+                    self.adicionar(null, p);
+                    u1_out.println(String.format("Usuário [%d] %s cadastrado com sucesso!", p.id, p.nome));
+                    u2_out.println(String.format("Usuário [%d] %s cadastrado com sucesso!", p.id, p.nome));
+                } catch (SQLException | IOException e) {
+                    u1_out.println("~" + e.getMessage());
+                    u2_out.println("~" + e.getMessage());
+                } finally {
+                    ServerController.executando_cad_comb = false;
                     u1_out.println("fim");
                     u2_out.println("fim");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    self.executando_cad_comb = false;
-                }                            
+                    try {
+                        s.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } 
             }
         }).start();
     }

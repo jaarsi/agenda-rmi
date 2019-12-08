@@ -12,6 +12,7 @@ import java.rmi.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class CLI {
     private Usuario usuario = null;
     private ServerRMIInterface stub = null;
     private String rmireg_host;
-    private int rmireg_porta;    
-    private String ref_remota;    
+    private String ref_remota;
+    private List<String> notificacoes = new ArrayList<String>();
 
     private void identificar_usuario() {
         this.usuario = new Usuario();
@@ -36,8 +37,7 @@ public class CLI {
         this.rmireg_host = this.input_str("Informe o host do 'rmiregistry': (localhost) ");
         if (this.rmireg_host.trim().equals("")) 
             this.rmireg_host = "localhost";
-        this.rmireg_porta = this.input_int("Informe a porta do 'rmiregistry': ");
-        Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
+        Registry rmireg = LocateRegistry.getRegistry(rmireg_host, 1099);
         this.ref_remota = this.select_str(
             "Selecione um servidor dos servidores acima: ", 
             rmireg.list()
@@ -56,16 +56,12 @@ public class CLI {
 			public void run() {
                 Socket s = null;
                 try {
-                    s = new Socket(self.rmireg_host, self.rmireg_porta+1);
+                    s = new Socket(self.rmireg_host, 2000);
                     BufferedReader in = 
                         new BufferedReader(new InputStreamReader(s.getInputStream()));
                     while (true) 
                         try {
-                            String msg = in.readLine();
-                            // if (msg.indexOf(self.usuario.login) == -1) 
-                            //     continue;
-                            msg = CRLF + CRLF + msg + CRLF + CRLF;
-                            self.show_msg(msg);
+                            self.notificacoes.add(in.readLine());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }                        
@@ -83,8 +79,19 @@ public class CLI {
         socket_thread.start();
     }
 
+    private void listar_notificacoes() {
+        String s = CRLF;
+        for (String notif: this.notificacoes)
+            s += "! " + notif + CRLF;
+        s += CRLF;
+        this.notificacoes.clear();
+        this.show_msg(s);
+    }
+
     private int menu() {
-        return input_int(
+        this.listar_notificacoes();
+
+        return input_int(            
             String.format(
                 "Bem-vindo %s, voce esta conectado ao servidor %s !" + CRLF, 
                 this.usuario.login, this.ref_remota) +
@@ -163,7 +170,7 @@ public class CLI {
         try {
             this.stub.cadastro_combinado();
             Thread.sleep(3000);
-            s = new Socket(this.rmireg_host, 5555);
+            s = new Socket(this.rmireg_host, 2001);
             BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             PrintWriter out = new PrintWriter(s.getOutputStream(), true);
             while (true) {
@@ -171,7 +178,11 @@ public class CLI {
                 if (msg.equals("fim")) 
                     break;
                 else if (msg.lastIndexOf(":") > 0)
-                    out.printf("%s" + CRLF, this.input_str(msg));
+                    out.println(this.input_str(msg));
+                else if (msg.startsWith("~"))
+                    this.show_msg(
+                        CRLF + CRLF + "Falha na validação dos dados: " + msg + CRLF
+                    );
                 else
                     this.show_msg(msg + CRLF);
             }

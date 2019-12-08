@@ -42,8 +42,6 @@ public class Server {
         Options options = new Options();
         Option opt = new Option("rmi_host", true, "Host do 'rmiregistry'");
         options.addOption(opt);
-        opt = new Option("rmi_porta", true, "Porta do 'rmiregistry'");
-        options.addOption(opt);
         opt = new Option("ref", true, "Nome da referencia remota que sera exportada");
         opt.setRequired(true);
         options.addOption(opt);
@@ -64,8 +62,7 @@ public class Server {
             System.exit(0);
         }
 
-        String rmireg_host = cmd.getOptionValue("rmi_host", "localhost");
-        int rmireg_porta = Integer.parseInt(cmd.getOptionValue("rmi_porta", "1099"));
+        String rmireg_host = cmd.getOptionValue("rmi_host", "localhost");        
         String rmireg_ref_remota = cmd.getOptionValue("ref");
         boolean rebind = cmd.hasOption("rb");
 
@@ -117,7 +114,7 @@ public class Server {
         // do programa. caso as uma das ou nenhuma informacao sobre o rmiregistry 
         // tenha sido passado, assume-se "localhost" para o host e "1099" para a porta,
         // que sao os valores padrões;
-        Registry rmireg = LocateRegistry.getRegistry(rmireg_host, rmireg_porta);
+        Registry rmireg = LocateRegistry.getRegistry(rmireg_host, 1099);
         try {
             try {
                 // tenta vincular, no rmiregistry, o stub gerado (PessoaController) 
@@ -132,22 +129,21 @@ public class Server {
                     "O 'rmiregistry' informado nao respondeu, criando localmente ...\n"
                 );
                 rmireg_host = "localhost";
-                rmireg = LocateRegistry.createRegistry(rmireg_porta);
+                rmireg = LocateRegistry.createRegistry(1099);
                 rmireg.bind(rmireg_ref_remota, stub);
 
                 // criando a thread responsavel por receber as requisicoes dos 
                 // sockets dos clientes. ele tem a funcao de armazenar em um array
                 // o "escritor" dos clientes que se conectam ao servidor, para 
                 // de ser usado na classe 'Notificador'.
-                // ele só é criado qdo rmiregistry é local;
-                
+                // ele só é criado qdo rmiregistry é local;                
                 List<PrintWriter> clientes = new ArrayList<PrintWriter>();
                 Thread socket_thread = new Thread(new Runnable() {
 					@Override
 					public void run() {
                         ServerSocket s;
                         try {
-                            s = new ServerSocket(rmireg_porta + 1);
+                            s = new ServerSocket(2000);
                             while (true)
                                 try {
                                     Socket c = s.accept();
@@ -196,10 +192,10 @@ public class Server {
                 System.err.print("A referencia remota utilizada ja esta registrada!\n");
                 System.exit(0);
             }
-        }
+        }        
         System.out.printf(
-            "Servidor pronto | 'rmiregistry' -> %s:%d | ref. remota %s\n",
-            rmireg_host, rmireg_porta, rmireg_ref_remota
+            "Servidor pronto | 'rmiregistry' -> %s:1099 | ref. remota %s\n",  
+            rmireg_host, rmireg_ref_remota
         );
     }
 }

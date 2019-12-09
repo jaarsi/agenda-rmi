@@ -33,6 +33,7 @@
             "request": "launch",
             "mainClass": "app.client.Client",
             "projectName": "agenda-rmi",
+            "args": "-gui"
         },
         {
             "type": "java",
